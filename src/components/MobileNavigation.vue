@@ -1,14 +1,23 @@
 <template>
   <v-navigation-drawer fixed dark temporary v-model="drawer">
     <v-list>
-      <v-list-item v-for="(item, index) in menuItems" :key="item.title" link>
-        <v-list-item-content>
-          <v-list-item-title @click="handleTimeSpan(index)">{{ item.title }}</v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
+      <v-list-item-group
+        v-model="group"
+        color="primary"
+      >
+        <v-list-item v-for="(item, index) in menuItems" :key="item.title" link>
+          <v-list-item-content>
+            <v-list-item-title @click="handleTimeSpan(index)">{{
+              item.title
+            }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list-item-group>
     </v-list>
     <div class="ma-4">
-      <v-btn class="primary" rounded depressed block @click="logout">Logout</v-btn>
+      <v-btn class="primary" rounded depressed block @click="logout"
+        >Logout</v-btn
+      >
     </div>
 
     <template v-slot:append>
@@ -24,6 +33,7 @@ export default {
   data() {
     return {
       drawer: false,
+      group: null,
       menuItems: [
         {
           title: "Last month",
@@ -40,6 +50,11 @@ export default {
   name: "MobileNavigation",
   components: {
     Footer,
+  },
+  watch: {
+    group() {
+      this.drawer = false;
+    },
   },
   methods: {
     logout() {

@@ -8,7 +8,7 @@
       <v-toolbar-title>Spotify Card Deck</v-toolbar-title>
     </v-app-bar>
     <MobileNavigation
-      v-if="isMobile"
+      v-if="isMobile && !isLoggedOut"
       :drawer="drawer"
       v-on:logout="logout"
       ref="drawer"
@@ -144,7 +144,7 @@ export default {
       spotify: "",
       user: "",
       topTrack: "",
-      isLoading: false,
+      isLoading: true,
       topTrackData: "",
       otherTopArtistsTopTracks: [],
       myTopTracks: {
@@ -175,18 +175,18 @@ export default {
   created: async function () {},
   mounted: async function () {
     this.spotify = await apiInit();
-
-    this.isLoading = true;
     await this.makeRequests(this.spotify);
     this.isLoading = false;
     this.colors = new Colors(this.topTrack.album.images[0].url);
   },
   methods: {
     async makeRequests(api) {
+      this.isLoading = true;
       try {
         this.user = await api.getMe().then((res) => {
           if (res.status === 401) {
             this.isLoggedOut = true;
+            this.isLoading = false;
             return;
           }
           this.isLoggedOut = false;
@@ -242,11 +242,9 @@ export default {
       apiReset();
       this.isLoggedOut = true;
     },
-    setTimeSpan(time) {
-      window.console.log("aaa");
-      this.isLoading = true;
+    async setTimeSpan(time) {
       this.chosenTime = time;
-      this.makeRequests(this.spotify);
+      await this.makeRequests(this.spotify);
       this.isLoading = false;
     },
     generateStoryImage() {},
