@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="track" v-if="lightColor && darkColor" :style="gradientBackground()">
+    <div class="track" v-if="lightColor && darkColor" :style="dynamicStyle()">
       <div class="header">
         <div class="num">#{{index}}</div>
         <div class="text">
@@ -63,14 +63,14 @@
   border-radius: 10px;
   padding: 10px;
   box-sizing: border-box;
+  overflow:hidden;
   .name {
     font-size: 1.2em;
     font-weight: 400;
     margin-left: 10px;
-  }
-  .artist {
-    font-size: 1.2em;
-    margin-left: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 img {
@@ -128,8 +128,12 @@ export default {
     getFeatureTitle(name) {
       return this.card.getFeatureText(name);
     },
-    gradientBackground() {
-      return `background-image: linear-gradient(to right, ${this.lightColor}, ${this.darkColor}`;
+    dynamicStyle() {
+      let background = `background-image: linear-gradient(to right, ${this.lightColor}, ${this.darkColor};`;
+      let width = this.$vuetify.breakpoint.smAndDown
+        ? "width: 90%; font-size: 0.8em;"
+        : "width: 400px;";
+      return `${background} ${width}`;
     },
   },
 };

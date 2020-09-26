@@ -1,19 +1,19 @@
 export class CardInfo {
   featureText = {
     acousticness: {
-      text: "KNOWLEDGE",
+      text: "MANA",
     },
     valence: {
       text: "WILL",
     },
     energy: {
-      text: "ENERGY",
+      text: "STRENGTH",
     },
     danceability: {
       text: "SPEED",
     },
     speechiness: {
-      text: "MAGIC",
+      text: "PERSUASION",
     },
   }
 

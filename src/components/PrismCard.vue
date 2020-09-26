@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="list">
-      <div class="track" :style="gradientBackground()">
+      <div class="track" :style="dynamicStyle()">
         <div class="header">
           <div class="num">#1</div>
           <div class="text">
@@ -22,7 +22,6 @@
 <style lang="scss" scoped>
 .list {
   .track {
-    width: 400px;
     box-sizing: border-box;
     padding: 20px;
     display: flex;
@@ -32,7 +31,7 @@
     margin: 0 auto;
   }
 
-  .header{
+  .header {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -67,6 +66,9 @@
       font-size: 1.2em;
       font-weight: 400;
       margin-left: 10px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .artist {
       font-size: 1.2em;
@@ -104,13 +106,13 @@
 </style>
 
 <script>
-import { CardInfo } from '../utils/cardInfo';
+import { CardInfo } from "../utils/cardInfo";
 
 export default {
   name: "PrismCard",
   data() {
     return {
-      card: '',
+      card: "",
       filteredStats: [],
     };
   },
@@ -123,8 +125,13 @@ export default {
     getFeatureTitle(name) {
       return this.card.getFeatureText(name);
     },
-    gradientBackground() {
-      return `background-image: linear-gradient(to bottom right, rgb(194, 255, 182), rgb(255, 163, 182), rgb(221, 169, 255), rgb(162, 209, 255); box-shadow: inset 0 0 20px #fff, inset 10px 0 30px #f0f, inset -10px 0 30px #0ff, inset 10px 0 100px #f0f, inset -10px 0 100px #0ff, 0 0 20px #fff, -10px 0 30px #f0f, 10px 0 30px #0ff;`
+    dynamicStyle() {
+      let background = `background-image: linear-gradient(to bottom right, rgb(194, 255, 182), rgb(255, 163, 182), rgb(221, 169, 255), rgb(162, 209, 255); box-shadow: inset 0 0 20px #fff, inset 10px 0 30px #f0f, inset -10px 0 30px #0ff, inset 10px 0 100px #f0f, inset -10px 0 100px #0ff, 0 0 20px #fff, -10px 0 30px #f0f, 10px 0 30px #0ff;`;
+
+      let width = this.$vuetify.breakpoint.smAndDown
+        ? "width: 90%; font-size: 0.8em;"
+        : "width: 400px";
+      return `${background} ${width}`;
     },
   },
 };
