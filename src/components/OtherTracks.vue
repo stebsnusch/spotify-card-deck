@@ -5,6 +5,7 @@
         <Card
           :name="track.name"
           :index="index + 2"
+          :id="track.id"
           :artist="track.artists[0].name"
           :image="track.album.images[0].url"
           :colors="getColors(track.album.images[0].url)"

@@ -1,24 +1,45 @@
 <template>
   <div>
-    <div class="track" v-if="lightColor && darkColor" :style="dynamicStyle()">
-      <div class="header">
-        <div class="num">#{{index}}</div>
-        <div class="text">
-          <h3 class="name">{{name.toUpperCase()}}</h3>
-        </div>
+    <div>
+      <div class="download d-flex flex-row justify-center my-5" align="center">
+        <v-btn
+          color="primary"
+          align="center"
+          v-on:click.stop="downloadCardImage(id, name)"
+        >
+          <v-icon class="mr-2">mdi-download</v-icon>
+          Download card
+        </v-btn>
       </div>
-      <img :src="image" />
-      <div class="skills">
-        <div class="skill" v-for="stat in filteredStats" :key="stat.value">
-          <span>{{getFeatureTitle(stat.name).toUpperCase()}}</span>
-          {{(stat.value * 100).toFixed(1)}}
+      <div
+        class="track"
+        :id="id"
+        v-if="lightColor && darkColor"
+        :style="dynamicStyle()"
+      >
+        <div class="header">
+          <div class="num">#{{ index }}</div>
+          <div class="text">
+            <h3 class="name">{{ name.toUpperCase() }}</h3>
+          </div>
+        </div>
+        <img :src="image" />
+        <div class="skills">
+          <div class="skill" v-for="stat in filteredStats" :key="stat.value">
+            <span>{{ getFeatureTitle(stat.name).toUpperCase() }}</span>
+            {{ (stat.value * 100).toFixed(1) }}
+          </div>
         </div>
       </div>
     </div>
+    <div :id="`${id}-${name}-DIV`" style="height: 0; overflow: hidden"></div>
   </div>
 </template>
 <style lang="scss" scoped>
+@import "../utils/fonts";
+
 .track {
+  font-family: "Chakra Petch";
   margin: 0 auto;
   width: 400px;
   box-sizing: border-box;
@@ -63,7 +84,7 @@
   border-radius: 10px;
   padding: 10px;
   box-sizing: border-box;
-  overflow:hidden;
+  overflow: hidden;
   .name {
     font-size: 1.2em;
     font-weight: 400;
@@ -103,6 +124,7 @@ img {
 </style>
 
 <script>
+import * as domtoimage from "dom-to-image";
 import { CardInfo } from "../utils/cardInfo";
 
 export default {
@@ -115,7 +137,7 @@ export default {
       darkColor: "",
     };
   },
-  props: ["stats", "colors", "image", "artist", "name", "index"],
+  props: ["stats", "colors", "image", "artist", "name", "index", "id"],
   mounted: async function () {
     this.card = new CardInfo();
     this.filteredStats = this.card.getStats(this.stats);
@@ -123,6 +145,7 @@ export default {
       this.lightColor = res[0];
       this.darkColor = res[1];
     });
+    this.generateClone(this.id, this.name);
   },
   methods: {
     getFeatureTitle(name) {
@@ -134,6 +157,34 @@ export default {
         ? "width: 90%; font-size: 0.8em;"
         : "width: 400px;";
       return `${background} ${width}`;
+    },
+    generateClone(id, name) {
+      let cloneCardContainer = document.getElementById(`${id}-${name}-DIV`);
+      let originalCard = document.getElementById(id);
+      let cloneCard = document.getElementById(`${id}-${name}`);
+
+      cloneCard = originalCard.cloneNode(true);
+      cloneCard.style.margin = "0";
+      cloneCard.setAttribute("id", `${id}-${name}`);
+
+      cloneCardContainer.appendChild(cloneCard);
+    },
+    getCloneCard(id, name) {
+      return document.getElementById(`${id}-${name}`);
+    },
+    downloadCardImage(id, name) {
+      let image = this.getCloneCard(id, name);
+
+      domtoimage
+        .toPng(image, {
+          bgcolor: "#000",
+        })
+        .then(function (dataUrl) {
+          let link = document.createElement("a");
+          link.download = `CARD-${name}.png`;
+          link.href = dataUrl;
+          link.click();
+        });
     },
   },
 };

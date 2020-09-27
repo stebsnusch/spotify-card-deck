@@ -45,15 +45,13 @@ export class Colors {
 
 export class Canvas {
   context;
-  constructor(canvasElement, colors) {
-    this.canvas = canvasElement;
-    this.colors = colors;
+  constructor() {
+    this.canvas = document.createElement('canvas');
     this.init();
   }
 
   init = () => {
     this.getContext();
-    this.context.font = "600 130px Poppins";
     this.context.save();
   }
 
@@ -64,6 +62,23 @@ export class Canvas {
   }
 
   getContext = () => this.context = this.canvas.getContext("2d");
+
+  generateStoriesImageSize = () => {
+    this.canvas.width = 1080;
+    this.canvas.height = 1920;
+  }
+
+  setBlackBackground = () => {
+    this.context.fillStyle = '#000';
+    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.reset(); 
+  }
+
+  placeImageCenter = (image, width, height) => {
+    let middleX = (this.canvas.width / 2) - width;
+    let middleY = (this.canvas.height / 2) - height;
+    this.drawImage(image, middleX, middleY, width, height);
+  }
 
   getLightColorFill = async (x, y, width, height) => {
     this.context.fillStyle = await this.colors.getLightColor();
@@ -83,11 +98,11 @@ export class Canvas {
   }
 
   drawImage = (image, x, y, imageWidth, imageHeight) => (
-    window.console.log(image),
-    this.context.filter = 'grayscale(100%) contrast(95%)',
     this.context.drawImage(image, x, y, imageWidth, imageHeight),
     this.reset()
   )
+
+  generateImage = () => this.canvas.toDataURL();
 
   getGradientColorTransparentFill = async (x, y, width, height, opacity) => {
     let gradient = this.context.createLinearGradient(0, 0, width, height);

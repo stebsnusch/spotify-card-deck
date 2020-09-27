@@ -1,6 +1,6 @@
 <template>
   <v-app id="app">
-    <v-app-bar v-if="isMobile" dark>
+    <v-app-bar class="flex-grow-0" v-if="isMobile" dark>
       <v-app-bar-nav-icon
         v-if="!isLoggedOut"
         @click="$refs.drawer.drawer = !$refs.drawer.drawer"
@@ -23,7 +23,7 @@
       <Login v-if="isLoggedOut && !isLoading" />
       <Loading v-if="isLoading" />
 
-      <v-container v-if="!isLoading && !isLoggedOut">
+      <v-container v-if="!isLoading && !isLoggedOut && topTrack">
         <v-row>
           <v-col class="my-16" align-self="center" :cols="12">
             <h2 class="text-center">Your prism card is</h2>
@@ -37,12 +37,12 @@
             />
           </v-col>
         </v-row>
-        <v-row>
+        <v-row v-if="myTopTracks.tracks.length > 0">
           <v-col class="text-center my-16" :cols="12">
             <h2>More on your deck:</h2>
           </v-col>
           <v-col :cols="12">
-            <OtherTracks v-if="myTopTracks.tracks.length > 0" :myTopTracks="myTopTracks" />
+            <OtherTracks :myTopTracks="myTopTracks" />
           </v-col>
         </v-row>
         <v-row>
@@ -50,11 +50,28 @@
             <h2>Share with with your friends</h2>
           </v-col>
           <v-col class="mb-16" align="center" :cols="12">
-            <v-btn color="accent d-block mb-5" depressed rounded large>Download All Cards</v-btn>
-            <v-btn color="primary d-block mb-5" depressed rounded large>Instagram Stories</v-btn>
-            <v-btn color="secondary d-block" depressed rounded large>Square</v-btn>
+            <v-btn color="accent d-block mb-5" depressed rounded large
+              >Download All Cards</v-btn
+            >
+            <v-btn color="primary d-block mb-5" depressed rounded large
+              >Instagram Stories</v-btn
+            >
+            <v-btn color="secondary d-block" depressed rounded large
+              >Square</v-btn
+            >
           </v-col>
         </v-row>
+      </v-container>
+      <v-container
+        class="fill-height justify-center flex-column"
+        v-if="!isLoading && !isLoggedOut && !topTrack"
+      >
+        <h2 class="mb-5">
+          Sorry, but you don't have enough tracks to be analyzed...
+        </h2>
+        <v-btn color="secondary" depressed rounded large @click="logout"
+          >Login with another account!</v-btn
+        >
       </v-container>
     </v-main>
   </v-app>
@@ -239,8 +256,8 @@ export default {
       return userFirstName;
     },
     logout() {
-      apiReset();
       this.isLoggedOut = true;
+      apiReset(this.spotify);
     },
     async setTimeSpan(time) {
       this.chosenTime = time;
