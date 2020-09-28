@@ -1,108 +1,43 @@
 <template>
   <div>
-    <div class="list">
-      <div class="track" :style="dynamicStyle()">
+    <div>
+      <div
+        class="track mb-10"
+        :ref="id"
+        v-if="id && filteredStats"
+        :style="dynamicStyle()"
+      >
         <div class="header">
           <div class="num">#1</div>
           <div class="text">
-            <h3 class="name">{{name.toUpperCase()}}</h3>
+            <h3 class="name">{{ name.toUpperCase() }}</h3>
           </div>
         </div>
         <img :src="image" />
         <div class="skills">
           <div class="skill" v-for="stat in filteredStats" :key="stat.value">
-            <span>{{getFeatureTitle(stat.name).toUpperCase()}}</span>
-            {{(stat.value * 100).toFixed(1)}}
+            <span>{{ getFeatureTitle(stat.name).toUpperCase() }}</span>
+            {{ (stat.value * 100).toFixed(1) }}
           </div>
         </div>
       </div>
+      <div class="download d-flex flex-row justify-center my-5" align="center">
+        <v-btn
+          color="primary"
+          align="center"
+          v-on:click.stop="card.downloadCardImage($refs, id, name)"
+        >
+          <v-icon class="mr-2">mdi-download</v-icon>
+          Download card
+        </v-btn>
+      </div>
     </div>
+    <div :ref="`${id}-${name}-DIV`" style="height: 0; overflow: hidden"></div>
   </div>
 </template>
 <style lang="scss" scoped>
-.list {
-  .track {
-    box-sizing: border-box;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    border-radius: 10px;
-    margin: 0 auto;
-  }
-
-  .header {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .num {
-    color: #2d2d2d;
-    width: 50px;
-    height: 45px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #fff;
-    border: 1px solid black;
-    border-radius: 50%;
-    padding: 10px;
-    box-sizing: border-box;
-    font-size: 1em;
-    margin-right: 5px;
-  }
-
-  .text {
-    color: #2d2d2d;
-    width: 100%;
-    background-color: #fff;
-    border: 1px solid black;
-    border-radius: 10px;
-    padding: 10px;
-    box-sizing: border-box;
-    .name {
-      font-size: 1.2em;
-      font-weight: 400;
-      margin-left: 10px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .artist {
-      font-size: 1.2em;
-      margin-left: 10px;
-    }
-  }
-  img {
-    margin: 20px 0;
-    width: 100%;
-    box-sizing: border-box;
-    border-radius: 10px;
-  }
-
-  .skills {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 10px;
-    background-color: #fff;
-    border-radius: 10px;
-    border: 1px solid black;
-  }
-  .skill {
-    display: flex;
-    flex-direction: row;
-    padding: 10px;
-    color: #000;
-    justify-content: space-between;
-    position: relative;
-    border-bottom: 1px dashed black;
-    &:last-child {
-      border-bottom: none;
-    }
-  }
-}
+@import "../utils/fonts";
+@import "../utils/cardStyling";
 </style>
 
 <script>
@@ -113,13 +48,27 @@ export default {
   data() {
     return {
       card: "",
-      filteredStats: [],
+      filteredStats: null,
+      cardImage: null,
     };
   },
-  props: ["stats", "image", "artist", "name"],
-  mounted: function () {
+  props: ["stats", "image", "artist", "name", "id"],
+  mounted: async function () {
     this.card = new CardInfo();
-    this.filteredStats = this.card.getStats(this.stats);
+    this.filteredStats = await this.card.getStats(this.stats);
+    (await this.filteredStats) &&
+      this.card.generateClone(this.$refs, this.id, this.name);
+  },
+  updated: async function () {
+    window.console.log(this.card)
+    if (this.card) {
+      this.cardImage = await this.card.generateImage(
+        this.$refs,
+        this.id,
+        this.name
+      );
+      this.$emit("prismCard", this.cardImage);
+    }
   },
   methods: {
     getFeatureTitle(name) {

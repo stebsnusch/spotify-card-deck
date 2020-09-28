@@ -11,6 +11,7 @@
       v-if="isMobile && !isLoggedOut"
       :drawer="drawer"
       v-on:logout="logout"
+      :user="user"
       ref="drawer"
       v-on:timeSpan="setTimeSpan($event)"
     />
@@ -18,8 +19,10 @@
       v-if="!isLoading && !isMobile && !isLoggedOut"
       v-on:logout="logout"
       v-on:timeSpan="setTimeSpan($event)"
+      :user="user"
     />
     <v-main>
+      <div id="testeimg"></div>
       <Login v-if="isLoggedOut && !isLoading" />
       <Loading v-if="isLoading" />
 
@@ -34,6 +37,8 @@
               :artist="topArtist.name"
               :stats="topTrackData"
               :name="topTrack.name"
+              :id="topTrack.id"
+              v-on:prismCard="addToAllCards($event)"
             />
           </v-col>
         </v-row>
@@ -42,23 +47,25 @@
             <h2>More on your deck:</h2>
           </v-col>
           <v-col :cols="12">
-            <OtherTracks :myTopTracks="myTopTracks" />
+            <OtherTracks
+              :myTopTracks="myTopTracks"
+            />
           </v-col>
         </v-row>
         <v-row>
-          <v-col class="text-center my-16" :cols="12">
-            <h2>Share with with your friends</h2>
+          <v-col class="text-center mt-10" :cols="12">
+            <h2>Share with the world</h2>
           </v-col>
           <v-col class="mb-16" align="center" :cols="12">
-            <v-btn color="accent d-block mb-5" depressed rounded large
-              >Download All Cards</v-btn
+            <v-btn
+              color="primary mr-5"
+              v-on:click.stop="generateStoriesImage()"
+              depressed
+              rounded
+              large
+              >Stories</v-btn
             >
-            <v-btn color="primary d-block mb-5" depressed rounded large
-              >Instagram Stories</v-btn
-            >
-            <v-btn color="secondary d-block" depressed rounded large
-              >Square</v-btn
-            >
+            <v-btn color="secondary" depressed rounded large>Feed</v-btn>
           </v-col>
         </v-row>
       </v-container>
@@ -73,6 +80,14 @@
           >Login with another account!</v-btn
         >
       </v-container>
+      <div id="teste">
+        <canvas
+          id="storiesCanvas"
+          width="1080"
+          height="1920"
+          style="border: 2px solid red"
+        ></canvas>
+      </div>
     </v-main>
   </v-app>
 </template>
@@ -148,7 +163,7 @@ import SideNavigation from "./components/SideNavigation";
 import PrismCard from "./components/PrismCard";
 import OtherTracks from "./components/OtherTracks";
 import { apiInit, apiReset } from "./utils/api";
-import { Colors } from "./utils/styling";
+import { Colors, Canvas } from "./utils/styling";
 
 export default {
   data() {
@@ -171,6 +186,7 @@ export default {
       topArtist: {},
       topArtistImage: "",
       artistTopTracksAudioFeatures: [],
+      allCards: [],
     };
   },
   name: "App",
@@ -194,18 +210,20 @@ export default {
     this.spotify = await apiInit();
     await this.makeRequests(this.spotify);
     this.isLoading = false;
-    this.colors = new Colors(this.topTrack.album.images[0].url);
+    this.colors = new Colors(this.topTrack.album.images[0].url)
+    this.allCards.length > 0 && this.teste();
   },
   methods: {
     async makeRequests(api) {
       this.isLoading = true;
       try {
-        this.user = await api.getMe().then((res) => {
+        await api.getMe().then((res) => {
           if (res.status === 401) {
             this.isLoggedOut = true;
             this.isLoading = false;
             return;
           }
+          this.user = res;
           this.isLoggedOut = false;
         });
 
@@ -247,14 +265,6 @@ export default {
         window.console.log(e);
       }
     },
-    getUserFirstName() {
-      let userFirstName = this.user.display_name.split(" ")[0];
-      if (userFirstName > 15) {
-        userFirstName.slice(0, 14);
-      }
-
-      return userFirstName;
-    },
     logout() {
       this.isLoggedOut = true;
       apiReset(this.spotify);
@@ -264,7 +274,34 @@ export default {
       await this.makeRequests(this.spotify);
       this.isLoading = false;
     },
-    generateStoryImage() {},
+    async teste(){
+      let div = document.getElementById("testeimg");
+      let image = new Image();
+      
+      image.src = this.allCards[0]
+      div.appendChild(image);
+      window.console.log("IMAGEM", image);
+      
+    },
+    generateStoriesImage() {
+      let canvasElement = document.getElementById("storiesCanvas");
+      let canvas = new Canvas(canvasElement);
+      let cardX = 0;
+      let cardY = 0;
+
+      Promise.all(this.allCards).then((cards) => {
+        for (let i = 0; i < cards.length; i++) {
+          let image = new Image();
+          image.src = cards[i];
+          canvas.drawImage(image, cardX, cardY, 400, 720);
+          cardY = cardY + 200;
+        }
+      });
+    },
+    addToAllCards(card) {
+      window.console.log(card)
+      this.allCards.push(card);
+    },
   },
 };
 </script>

@@ -1,10 +1,27 @@
 <template>
   <v-navigation-drawer fixed dark temporary v-model="drawer">
     <v-list>
-      <v-list-item-group
-        v-model="group"
-        color="primary"
-      >
+      <v-list-item v-if="userPicture">
+        <v-list-item-avatar>
+          <v-img :src="userPicture"></v-img>
+        </v-list-item-avatar>
+      </v-list-item>
+      <v-list-item v-else>
+        <v-icon class="mdi-36px">mdi-account-circle</v-icon>
+      </v-list-item>
+
+      <v-list-item>
+        <v-list-item-content>
+          <v-list-item-subtitle>HELLO,</v-list-item-subtitle>
+          <v-list-item-title class="title">
+            {{ getUserFirstName() }}
+          </v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+    </v-list>
+    <v-divider></v-divider>
+    <v-list>
+      <v-list-item-group v-model="group" color="primary">
         <v-list-item v-for="(item, index) in menuItems" :key="item.title" link>
           <v-list-item-content>
             <v-list-item-title @click="handleTimeSpan(index)">{{
@@ -34,6 +51,7 @@ export default {
     return {
       drawer: false,
       group: null,
+      userPicture: null,
       menuItems: [
         {
           title: "Last month",
@@ -56,12 +74,15 @@ export default {
       this.drawer = false;
     },
   },
+  props: ["user"],
+  mounted: function () {
+    this.userPicture = this.user.images[0].url;
+  },
   methods: {
     logout() {
       this.$emit("logout");
     },
     handleTimeSpan(index) {
-      window.console.log("bbbb");
       switch (index) {
         case 0:
           return this.$emit("timeSpan", "short_term");
@@ -72,6 +93,11 @@ export default {
         default:
           return this.$emit("timeSpan", "long_term");
       }
+    },
+    getUserFirstName() {
+      let userFirstName = this.user.display_name.split(" ")[0];
+
+      return userFirstName;
     },
   },
 };

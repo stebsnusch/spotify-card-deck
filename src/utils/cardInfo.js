@@ -1,3 +1,5 @@
+import * as domtoimage from "dom-to-image";
+
 export class CardInfo {
   featureText = {
     acousticness: {
@@ -24,12 +26,12 @@ export class CardInfo {
   filterFeatures = (song) => {
     let songFeatures = {};
 
-      songFeatures.acousticness = song.acousticness;
-      songFeatures.danceability = song.danceability;
-      songFeatures.energy = song.energy;
-      songFeatures.speechiness = song.speechiness;
-      songFeatures.valence = song.valence;
-      return songFeatures;
+    songFeatures.acousticness = song.acousticness;
+    songFeatures.danceability = song.danceability;
+    songFeatures.energy = song.energy;
+    songFeatures.speechiness = song.speechiness;
+    songFeatures.valence = song.valence;
+    return songFeatures;
   }
 
   getStats = (data) => {
@@ -45,5 +47,38 @@ export class CardInfo {
     );
 
     return statsArray;
+  }
+
+
+  generateClone = (reference, id, name) => {
+    window.console.log(reference, id, name)
+    let container = `${id}-${name}-DIV`;
+    let cloneCardContainer = reference[container];
+
+    let originalCard = reference[id];
+
+    let cloneCard = originalCard.cloneNode(true);
+    cloneCard.style.margin = "0";
+
+    cloneCardContainer.appendChild(cloneCard);
+  };
+
+  generateImage(reference, id, name) {
+    let clone = `${id}-${name}-DIV`;
+    let image = reference[clone].children[0];
+    return domtoimage
+      .toPng(image, {
+        bgcolor: "#000",
+      })
+  }
+
+  downloadCardImage(reference, id, name) {
+    this.generateImage(reference, id, name)
+      .then(function (dataUrl) {
+        let link = document.createElement("a");
+        link.download = `CARD-${name}.png`;
+        link.href = dataUrl;
+        link.click();
+      });
   }
 }

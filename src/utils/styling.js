@@ -45,8 +45,8 @@ export class Colors {
 
 export class Canvas {
   context;
-  constructor() {
-    this.canvas = document.createElement('canvas');
+  constructor(canvas) {
+    this.canvas = canvas;
     this.init();
   }
 
@@ -62,11 +62,6 @@ export class Canvas {
   }
 
   getContext = () => this.context = this.canvas.getContext("2d");
-
-  generateStoriesImageSize = () => {
-    this.canvas.width = 1080;
-    this.canvas.height = 1920;
-  }
 
   setBlackBackground = () => {
     this.context.fillStyle = '#000';
@@ -98,6 +93,7 @@ export class Canvas {
   }
 
   drawImage = (image, x, y, imageWidth, imageHeight) => (
+    window.console.log(image),
     this.context.drawImage(image, x, y, imageWidth, imageHeight),
     this.reset()
   )
