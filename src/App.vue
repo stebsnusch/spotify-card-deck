@@ -49,6 +49,7 @@
           <v-col :cols="12">
             <OtherTracks
               :myTopTracks="myTopTracks"
+              v-on:new-card="addToAllCards($event)"
             />
           </v-col>
         </v-row>
@@ -299,7 +300,6 @@ export default {
       });
     },
     addToAllCards(card) {
-      window.console.log(card)
       this.allCards.push(card);
     },
   },

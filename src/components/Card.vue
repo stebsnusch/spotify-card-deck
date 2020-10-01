@@ -51,6 +51,7 @@ export default {
       filteredStats: [],
       lightColor: "",
       darkColor: "",
+      cardImage: null,
     };
   },
   props: ["stats", "colors", "image", "artist", "name", "index", "id"],
@@ -61,10 +62,19 @@ export default {
       this.lightColor = res[0];
       this.darkColor = res[1];
     });
-    this.card.generateClone(this.$refs, this.id, this.name);
-    this.$emit('loadedCard', this.card.generateImage(this.$refs, this.id, this.name));
+    (await this.filteredStats) &&
+      this.card.generateClone(this.$refs, this.id, this.name);
+    setTimeout(this.emitLoadedCard, 1000);
   },
   methods: {
+    async emitLoadedCard() {
+      this.cardImage = await this.card.generateImage(
+        this.$refs,
+        this.id,
+        this.name
+      );
+      this.$emit("loadedCard", this.cardImage);
+    },
     getFeatureTitle(name) {
       return this.card.getFeatureText(name);
     },
@@ -74,7 +84,7 @@ export default {
         ? "width: 90%; font-size: 0.8em;"
         : "width: 400px;";
       return `${background} ${width}`;
-    },    
+    },
   },
 };
 </script>

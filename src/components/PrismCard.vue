@@ -58,19 +58,17 @@ export default {
     this.filteredStats = await this.card.getStats(this.stats);
     (await this.filteredStats) &&
       this.card.generateClone(this.$refs, this.id, this.name);
+    setTimeout(this.emitLoadedCard, 1000);
   },
-  updated: async function () {
-    window.console.log(this.card)
-    if (this.card) {
+  methods: {
+    async emitLoadedCard() {
       this.cardImage = await this.card.generateImage(
         this.$refs,
         this.id,
         this.name
       );
       this.$emit("prismCard", this.cardImage);
-    }
-  },
-  methods: {
+    },
     getFeatureTitle(name) {
       return this.card.getFeatureText(name);
     },

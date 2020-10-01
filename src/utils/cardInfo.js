@@ -51,7 +51,6 @@ export class CardInfo {
 
 
   generateClone = (reference, id, name) => {
-    window.console.log(reference, id, name)
     let container = `${id}-${name}-DIV`;
     let cloneCardContainer = reference[container];
 
