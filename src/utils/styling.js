@@ -66,25 +66,21 @@ export class Canvas {
   setBlackBackground = () => {
     this.context.fillStyle = '#000';
     this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-    this.reset(); 
+    this.reset();
   }
 
   placeImageCenter = (image, width, height) => {
-    let middleX = (this.canvas.width / 2) - width;
-    let middleY = (this.canvas.height / 2) - height;
+    let imgWidth = width / 2;
+    let imgHeight = height / 2
+    let middleX = (this.canvas.width / 2) - imgWidth;
+    let middleY = (this.canvas.height / 2) - imgHeight;
+
     this.drawImage(image, middleX, middleY, width, height);
   }
 
-  getLightColorFill = async (x, y, width, height) => {
-    this.context.fillStyle = await this.colors.getLightColor();
-    this.context.fillRect(x, y, width, height);
-    this.reset()
-  }
-
-  getLightColorText = async (text, x, y) => {
-    if (text.length >= 15) {
-      this.context.font = "600 100px Poppins";
-    }
+  getLightColorText = (text, size, x, y) => {
+    this.context.font = `400 ${size}px Chakra Petch`;
+    this.context.textAlign = "center";
     this.context.textBaseline = 'middle';
     this.context.fillStyle = '#fff';
     this.context.fillText(text, x, y);
@@ -92,23 +88,17 @@ export class Canvas {
     this.reset()
   }
 
-  drawImage = (image, x, y, imageWidth, imageHeight) => (
-    window.console.log(image),
-    this.context.drawImage(image, x, y, imageWidth, imageHeight),
-    this.reset()
-  )
+  drawImage = (image, x, y, imageWidth, imageHeight) => {
+    window.console.log(image);
+    let canvinhas = this;
+    window.setTimeout(function(canvinhas){
+      canvinhas.banana(canvinhas, image, x, y, imageWidth, imageHeight)
+    }, 1500, canvinhas);
+    this.reset();
+  }
 
-  generateImage = () => this.canvas.toDataURL();
-
-  getGradientColorTransparentFill = async (x, y, width, height, opacity) => {
-    let gradient = this.context.createLinearGradient(0, 0, width, height);
-    gradient.addColorStop(0, await this.colors.getVibrantColor());
-    gradient.addColorStop(1, await this.colors.getDarkColor());
-    this.context.fillStyle = gradient;
-    this.context.globalAlpha = opacity;
-    this.context.filter = 'contrast(175%) saturate(200%)';
-    this.context.fillRect(x, y, width, height);
-    this.context.globalAlpha = 1;
-    this.reset()
+  banana = (canvas, image, x, y, imageWidth, imageHeight) => {
+    window.console.log(image.complete)
+    canvas.context.drawImage(image, x, y, imageWidth, imageHeight);
   }
 }

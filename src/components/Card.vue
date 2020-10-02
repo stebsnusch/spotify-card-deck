@@ -64,17 +64,8 @@ export default {
     });
     (await this.filteredStats) &&
       this.card.generateClone(this.$refs, this.id, this.name);
-    setTimeout(this.emitLoadedCard, 1000);
   },
   methods: {
-    async emitLoadedCard() {
-      this.cardImage = await this.card.generateImage(
-        this.$refs,
-        this.id,
-        this.name
-      );
-      this.$emit("loadedCard", this.cardImage);
-    },
     getFeatureTitle(name) {
       return this.card.getFeatureText(name);
     },

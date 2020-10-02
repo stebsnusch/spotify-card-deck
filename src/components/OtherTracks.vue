@@ -26,7 +26,6 @@
           :image="track.album.images[0].url"
           :colors="getColors(track.album.images[0].url)"
           :stats="myTopTracks.audioFeatures[index]"
-          v-on:loadedCard="$emit('new-card', $event)"
         />
       </div>
     </div>

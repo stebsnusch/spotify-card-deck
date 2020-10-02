@@ -66,16 +66,19 @@ export class CardInfo {
     let clone = `${id}-${name}-DIV`;
     let image = reference[clone].children[0];
     return domtoimage
-      .toPng(image, {
+      .toJpeg(image, {
         bgcolor: "#000",
+        style: {
+          boxShadow: 'none',
+        }
       })
   }
 
-  downloadCardImage(reference, id, name) {
-    this.generateImage(reference, id, name)
+  async downloadCardImage(reference, id, name) {
+    await this.generateImage(reference, id, name)
       .then(function (dataUrl) {
         let link = document.createElement("a");
-        link.download = `CARD-${name}.png`;
+        link.download = `CARD-${name}.jpeg`;
         link.href = dataUrl;
         link.click();
       });

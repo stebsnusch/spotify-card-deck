@@ -28,7 +28,7 @@
 
       <v-container v-if="!isLoading && !isLoggedOut && topTrack">
         <v-row>
-          <v-col class="my-16" align-self="center" :cols="12">
+          <v-col class="my-10" align-self="center" :cols="12">
             <h2 class="text-center">Your prism card is</h2>
           </v-col>
           <v-col align-self="center" class="text-center" :cols="12">
@@ -38,7 +38,7 @@
               :stats="topTrackData"
               :name="topTrack.name"
               :id="topTrack.id"
-              v-on:prismCard="addToAllCards($event)"
+              v-on:prismCard="addToImage($event)"
             />
           </v-col>
         </v-row>
@@ -47,26 +47,30 @@
             <h2>More on your deck:</h2>
           </v-col>
           <v-col :cols="12">
-            <OtherTracks
-              :myTopTracks="myTopTracks"
-              v-on:new-card="addToAllCards($event)"
-            />
+            <OtherTracks :myTopTracks="myTopTracks" />
           </v-col>
         </v-row>
-        <v-row>
+        <v-row v-if="prismCardImg">
           <v-col class="text-center mt-10" :cols="12">
             <h2>Share with the world</h2>
           </v-col>
           <v-col class="mb-16" align="center" :cols="12">
             <v-btn
               color="primary mr-5"
-              v-on:click.stop="generateStoriesImage()"
+              v-on:click="downloadImage('stories')"
               depressed
               rounded
               large
               >Stories</v-btn
             >
-            <v-btn color="secondary" depressed rounded large>Feed</v-btn>
+            <v-btn
+              color="secondary"
+              v-on:click="downloadImage('feed')"
+              depressed
+              rounded
+              large
+              >Feed</v-btn
+            >
           </v-col>
         </v-row>
       </v-container>
@@ -81,12 +85,20 @@
           >Login with another account!</v-btn
         >
       </v-container>
-      <div id="teste">
+      <div id="cardImageStories" style="height: 0; overflow: hidden">
         <canvas
           id="storiesCanvas"
           width="1080"
           height="1920"
-          style="border: 2px solid red"
+          style="background-color: #000"
+        ></canvas>
+      </div>
+      <div id="cardImageFeed" style="height: 0; overflow: hidden">
+        <canvas
+          id="feedCanvas"
+          width="1080"
+          height="1080"
+          style="background-color: #000"
         ></canvas>
       </div>
     </v-main>
@@ -187,7 +199,7 @@ export default {
       topArtist: {},
       topArtistImage: "",
       artistTopTracksAudioFeatures: [],
-      allCards: [],
+      prismCardImg: null,
     };
   },
   name: "App",
@@ -211,8 +223,7 @@ export default {
     this.spotify = await apiInit();
     await this.makeRequests(this.spotify);
     this.isLoading = false;
-    this.colors = new Colors(this.topTrack.album.images[0].url)
-    this.allCards.length > 0 && this.teste();
+    this.colors = new Colors(this.topTrack.album.images[0].url);
   },
   methods: {
     async makeRequests(api) {
@@ -275,32 +286,56 @@ export default {
       await this.makeRequests(this.spotify);
       this.isLoading = false;
     },
-    async teste(){
-      let div = document.getElementById("testeimg");
-      let image = new Image();
-      
-      image.src = this.allCards[0]
-      div.appendChild(image);
-      window.console.log("IMAGEM", image);
-      
-    },
-    generateStoriesImage() {
-      let canvasElement = document.getElementById("storiesCanvas");
-      let canvas = new Canvas(canvasElement);
-      let cardX = 0;
-      let cardY = 0;
+    generateImageForDownload(context) {
+      let titleHeight = context === "stories" ? 400 : 100;
+      let infoHeight = context === "stories" ? 1500 : 965;
+      let creditsHeight = context === "stories" ? 1600 : 1020;
+      let imageContext = context === "stories" ? "storiesCanvas" : "feedCanvas";
 
-      Promise.all(this.allCards).then((cards) => {
-        for (let i = 0; i < cards.length; i++) {
-          let image = new Image();
-          image.src = cards[i];
-          canvas.drawImage(image, cardX, cardY, 400, 720);
-          cardY = cardY + 200;
-        }
-      });
+      let canvasElement = document.getElementById(imageContext);
+      let canvas = new Canvas(canvasElement);
+      let image = new Image();
+      image.src = this.prismCardImg;
+
+      canvas.getLightColorText(
+        "My prism card is",
+        100,
+        canvas.canvas.width / 2,
+        titleHeight
+      );
+
+      canvas.placeImageCenter(image, image.naturalWidth, image.naturalHeight);
+
+      canvas.getLightColorText(
+        "get yours at",
+        60,
+        canvas.canvas.width / 2,
+        infoHeight
+      );
+      canvas.getLightColorText(
+        "stebs.dev/spotify-card-deck",
+        50,
+        canvas.canvas.width / 2,
+        creditsHeight
+      );
     },
-    addToAllCards(card) {
-      this.allCards.push(card);
+    downloadImage(context) {
+      this.generateImageForDownload(context);
+
+      setTimeout(function (context, document) {
+        let imageContext =
+          context === "stories" ? "storiesCanvas" : "feedCanvas";
+        let canvasElement = document.getElementById(imageContext);
+
+        let url = canvasElement.toDataURL("image/jpeg", 1.0);
+        let link = document.createElement("a");
+        link.download = `SPOTIFY-CARD-DECK-PRISM-${context.toUpperCase()}.jpeg`;
+        link.href = url;
+        link.click();
+      }, 4000, context, document);
+    },
+    addToImage(card) {
+      this.prismCardImg = card;
     },
   },
 };

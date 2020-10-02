@@ -13,7 +13,7 @@
             <h3 class="name">{{ name.toUpperCase() }}</h3>
           </div>
         </div>
-        <img :src="image" />
+        <img :src="image" v-on:load="loaded(image)" />
         <div class="skills">
           <div class="skill" v-for="stat in filteredStats" :key="stat.value">
             <span>{{ getFeatureTitle(stat.name).toUpperCase() }}</span>
@@ -49,28 +49,28 @@ export default {
     return {
       card: "",
       filteredStats: null,
-      cardImage: null,
+      imgSrc: null,
     };
   },
   props: ["stats", "image", "artist", "name", "id"],
   mounted: async function () {
     this.card = new CardInfo();
     this.filteredStats = await this.card.getStats(this.stats);
-    (await this.filteredStats) &&
-      this.card.generateClone(this.$refs, this.id, this.name);
-    setTimeout(this.emitLoadedCard, 1000);
   },
   methods: {
     async emitLoadedCard() {
-      this.cardImage = await this.card.generateImage(
-        this.$refs,
-        this.id,
-        this.name
-      );
-      this.$emit("prismCard", this.cardImage);
+      await this.card
+        .generateImage(this.$refs, this.id, this.name)
+        .then((response) => this.$emit("prismCard", response));
     },
     getFeatureTitle(name) {
       return this.card.getFeatureText(name);
+    },
+    loaded(src) {
+      window.console.log(src);
+      this.imgSrc = src;
+      this.card.generateClone(this.$refs, this.id, this.name);
+      this.emitLoadedCard();
     },
     dynamicStyle() {
       let background = `background-image: linear-gradient(to bottom right, rgb(194, 255, 182), rgb(255, 163, 182), rgb(221, 169, 255), rgb(162, 209, 255); box-shadow: inset 0 0 20px #fff, inset 10px 0 30px #f0f, inset -10px 0 30px #0ff, inset 10px 0 100px #f0f, inset -10px 0 100px #0ff, 0 0 20px #fff, -10px 0 30px #f0f, 10px 0 30px #0ff;`;
