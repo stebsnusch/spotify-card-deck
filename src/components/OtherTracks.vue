@@ -19,6 +19,7 @@
     <div style="height: 0; overflow: hidden">
       <div v-for="(track, index) in myTopTracks.tracks" :key="track.name">
         <Card
+          :browser="browser"
           :name="track.name"
           :index="index + 2"
           :id="track.id"
@@ -45,7 +46,7 @@ export default {
   components: {
     Card,
   },
-  props: ["myTopTracks"],
+  props: ["myTopTracks", "browser"],
   mounted: async function () {},
   methods: {
     async getColors(image) {

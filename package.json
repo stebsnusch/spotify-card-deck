@@ -11,6 +11,7 @@
   "dependencies": {
     "@mdi/font": "^5.6.55",
     "core-js": "^3.6.5",
+    "detect-browser": "^5.1.1",
     "dom-to-image": "^2.6.0",
     "file-saver": "^2.0.2",
     "node-vibrant": "^3.1.5",

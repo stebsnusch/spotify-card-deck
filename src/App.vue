@@ -38,6 +38,7 @@
               :stats="topTrackData"
               :name="topTrack.name"
               :id="topTrack.id"
+              :browser="browser"
             />
           </v-col>
         </v-row>
@@ -46,7 +47,7 @@
             <h2>More on your deck:</h2>
           </v-col>
           <v-col :cols="12">
-            <OtherTracks :myTopTracks="myTopTracks" />
+            <OtherTracks :myTopTracks="myTopTracks" :browser="browser"/>
           </v-col>
         </v-row>
       </v-container>
@@ -145,6 +146,7 @@ h2 {
 </style>
 
 <script>
+import * as browser from 'detect-browser';
 import Login from "./components/Login";
 import Loading from "./components/Loading";
 import MobileNavigation from "./components/MobileNavigation";
@@ -159,6 +161,7 @@ export default {
     return {
       isLoggedOut: true,
       drawer: false,
+      browser: null,
       chosenTime: "short_term",
       colors: {},
       token: "",
@@ -199,6 +202,7 @@ export default {
     await this.makeRequests(this.spotify);
     this.isLoading = false;
     this.colors = new Colors(this.topTrack.album.images[0].url);
+    this.browser = browser.detect().name === 'safari';
   },
   methods: {
     async makeRequests(api) {

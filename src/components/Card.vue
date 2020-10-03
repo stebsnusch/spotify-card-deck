@@ -23,6 +23,7 @@
       </div>
       <div class="download d-flex flex-row justify-center my-5" align="center">
         <v-btn
+          v-if="browser"
           color="primary"
           align="center"
           v-on:click.stop="card.downloadCardImage($refs, id, name)"
@@ -54,7 +55,7 @@ export default {
       cardImage: null,
     };
   },
-  props: ["stats", "colors", "image", "artist", "name", "index", "id"],
+  props: ["stats", "colors", "image", "artist", "name", "index", "id", "browser"],
   mounted: async function () {
     this.card = new CardInfo();
     this.filteredStats = this.card.getStats(this.stats);
