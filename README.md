@@ -1,24 +1,13 @@
-# spotify-card-deck
+# Spotify Card Deck
 
-## Project setup
-```
-npm install
-```
+A simple project using Spofity's API.
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+## Live Demo
 
-### Compiles and minifies for production
-```
-npm run build
-```
+Click [here](https://stebs.dev/spotify-card-deck/) to access!
 
-### Lints and fixes files
-```
-npm run lint
-```
+# Built with
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+- [VueJS](https://vuejs.org/)
+- [Spotify Web API JS](https://github.com/JMPerez/spotify-web-api-js)
+- [OAuth bridge template](https://github.com/mpj/oauth-bridge-template)
