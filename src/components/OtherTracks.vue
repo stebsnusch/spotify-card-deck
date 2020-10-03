@@ -13,7 +13,7 @@
           :image="track.album.images[0].url"
           :colors="getColors(track.album.images[0].url)"
           :stats="myTopTracks.audioFeatures[index]"
-          :browser="browser"
+          :isIOS="isIOS"
         />
       </v-carousel-item>
     </v-carousel>
@@ -33,7 +33,7 @@ export default {
   components: {
     Card,
   },
-  props: ["myTopTracks", "browser"],
+  props: ["myTopTracks", "isIOS"],
   mounted: async function () {},
   methods: {
     async getColors(image) {

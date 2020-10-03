@@ -38,7 +38,7 @@
               :stats="topTrackData"
               :name="topTrack.name"
               :id="topTrack.id"
-              :browser="browser"
+              :isIOS="isIOS"
             />
           </v-col>
         </v-row>
@@ -47,7 +47,7 @@
             <h2>More on your deck:</h2>
           </v-col>
           <v-col :cols="12">
-            <OtherTracks :myTopTracks="myTopTracks" :browser="browser"/>
+            <OtherTracks :myTopTracks="myTopTracks" :isIOS="isIOS" />
           </v-col>
         </v-row>
       </v-container>
@@ -146,7 +146,6 @@ h2 {
 </style>
 
 <script>
-import * as browser from 'detect-browser';
 import Login from "./components/Login";
 import Loading from "./components/Loading";
 import MobileNavigation from "./components/MobileNavigation";
@@ -161,7 +160,7 @@ export default {
     return {
       isLoggedOut: true,
       drawer: false,
-      browser: null,
+      isIOS: null,
       chosenTime: "short_term",
       colors: {},
       token: "",
@@ -198,7 +197,7 @@ export default {
   },
   created: async function () {},
   mounted: async function () {
-    this.browser = browser.detect().name !== 'safari';
+    this.isIOS = this.getOS() === 'iOS';
     this.spotify = await apiInit();
     await this.makeRequests(this.spotify);
     this.isLoading = false;
@@ -264,6 +263,28 @@ export default {
       this.chosenTime = time;
       await this.makeRequests(this.spotify);
       this.isLoading = false;
+    },
+    getOS() {
+      var userAgent = window.navigator.userAgent,
+        platform = window.navigator.platform,
+        macosPlatforms = ["Macintosh", "MacIntel", "MacPPC", "Mac68K"],
+        windowsPlatforms = ["Win32", "Win64", "Windows", "WinCE"],
+        iosPlatforms = ["iPhone", "iPad", "iPod"],
+        os = null;
+
+      if (macosPlatforms.indexOf(platform) !== -1) {
+        os = "Mac OS";
+      } else if (iosPlatforms.indexOf(platform) !== -1) {
+        os = "iOS";
+      } else if (windowsPlatforms.indexOf(platform) !== -1) {
+        os = "Windows";
+      } else if (/Android/.test(userAgent)) {
+        os = "Android";
+      } else if (!os && /Linux/.test(platform)) {
+        os = "Linux";
+      }
+
+      return os;
     },
   },
 };

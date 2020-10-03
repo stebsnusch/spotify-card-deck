@@ -25,7 +25,7 @@
         <v-btn
           color="primary"
           align="center"
-          v-if="browser"
+          v-if="!isIOS"
           v-on:click.stop="card.downloadCardImage($refs, id, name)"
         >
           <v-icon class="mr-2">mdi-download</v-icon>
@@ -53,7 +53,7 @@ export default {
       imgSrc: null,
     };
   },
-  props: ["stats", "image", "artist", "name", "id", "browser"],
+  props: ["stats", "image", "artist", "name", "id", "isIOS"],
   mounted: async function () {
     this.card = new CardInfo();
     this.filteredStats = await this.card.getStats(this.stats);
