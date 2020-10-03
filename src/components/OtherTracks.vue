@@ -17,19 +17,6 @@
         />
       </v-carousel-item>
     </v-carousel>
-    <div style="height: 0; overflow: hidden">
-      <div v-for="(track, index) in myTopTracks.tracks" :key="track.name">
-        <Card
-          :name="track.name"
-          :index="index + 2"
-          :id="track.id"
-          :artist="track.artists[0].name"
-          :image="track.album.images[0].url"
-          :colors="getColors(track.album.images[0].url)"
-          :stats="myTopTracks.audioFeatures[index]"
-        />
-      </div>
-    </div>
   </div>
 </template>
 <script>
