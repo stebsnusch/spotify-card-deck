@@ -38,7 +38,6 @@
               :stats="topTrackData"
               :name="topTrack.name"
               :id="topTrack.id"
-              v-on:prismCard="addToImage($event)"
             />
           </v-col>
         </v-row>
@@ -48,29 +47,6 @@
           </v-col>
           <v-col :cols="12">
             <OtherTracks :myTopTracks="myTopTracks" />
-          </v-col>
-        </v-row>
-        <v-row v-if="prismCardImg">
-          <v-col class="text-center mt-10" :cols="12">
-            <h2>Share with the world</h2>
-          </v-col>
-          <v-col class="mb-16" align="center" :cols="12">
-            <v-btn
-              color="primary mr-5"
-              v-on:click="downloadImage('stories')"
-              depressed
-              rounded
-              large
-              >Stories</v-btn
-            >
-            <v-btn
-              color="secondary"
-              v-on:click="downloadImage('feed')"
-              depressed
-              rounded
-              large
-              >Feed</v-btn
-            >
           </v-col>
         </v-row>
       </v-container>
@@ -176,7 +152,7 @@ import SideNavigation from "./components/SideNavigation";
 import PrismCard from "./components/PrismCard";
 import OtherTracks from "./components/OtherTracks";
 import { apiInit, apiReset } from "./utils/api";
-import { Colors, Canvas } from "./utils/styling";
+import { Colors } from "./utils/colors";
 
 export default {
   data() {
@@ -199,7 +175,6 @@ export default {
       topArtist: {},
       topArtistImage: "",
       artistTopTracksAudioFeatures: [],
-      prismCardImg: null,
     };
   },
   name: "App",
@@ -285,57 +260,6 @@ export default {
       this.chosenTime = time;
       await this.makeRequests(this.spotify);
       this.isLoading = false;
-    },
-    generateImageForDownload(context) {
-      let titleHeight = context === "stories" ? 400 : 100;
-      let infoHeight = context === "stories" ? 1500 : 965;
-      let creditsHeight = context === "stories" ? 1600 : 1020;
-      let imageContext = context === "stories" ? "storiesCanvas" : "feedCanvas";
-
-      let canvasElement = document.getElementById(imageContext);
-      let canvas = new Canvas(canvasElement);
-      let image = new Image();
-      image.src = this.prismCardImg;
-
-      canvas.getLightColorText(
-        "My prism card is",
-        100,
-        canvas.canvas.width / 2,
-        titleHeight
-      );
-
-      canvas.placeImageCenter(image, image.naturalWidth, image.naturalHeight);
-
-      canvas.getLightColorText(
-        "get yours at",
-        60,
-        canvas.canvas.width / 2,
-        infoHeight
-      );
-      canvas.getLightColorText(
-        "stebs.dev/spotify-card-deck",
-        50,
-        canvas.canvas.width / 2,
-        creditsHeight
-      );
-    },
-    downloadImage(context) {
-      this.generateImageForDownload(context);
-
-      setTimeout(function (context, document) {
-        let imageContext =
-          context === "stories" ? "storiesCanvas" : "feedCanvas";
-        let canvasElement = document.getElementById(imageContext);
-
-        let url = canvasElement.toDataURL("image/jpeg", 1.0);
-        let link = document.createElement("a");
-        link.download = `SPOTIFY-CARD-DECK-PRISM-${context.toUpperCase()}.jpeg`;
-        link.href = url;
-        link.click();
-      }, 4000, context, document);
-    },
-    addToImage(card) {
-      this.prismCardImg = card;
     },
   },
 };

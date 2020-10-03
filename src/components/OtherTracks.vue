@@ -33,7 +33,7 @@
 </template>
 <script>
 import Card from "./Card";
-import { Colors } from "../utils/styling";
+import { Colors } from "../utils/colors";
 
 export default {
   name: "OtherTracks",

@@ -58,19 +58,11 @@ export default {
     this.filteredStats = await this.card.getStats(this.stats);
   },
   methods: {
-    async emitLoadedCard() {
-      await this.card
-        .generateImage(this.$refs, this.id, this.name)
-        .then((response) => this.$emit("prismCard", response));
-    },
     getFeatureTitle(name) {
       return this.card.getFeatureText(name);
     },
-    loaded(src) {
-      window.console.log(src);
-      this.imgSrc = src;
+    loaded(){
       this.card.generateClone(this.$refs, this.id, this.name);
-      this.emitLoadedCard();
     },
     dynamicStyle() {
       let background = `background-image: linear-gradient(to bottom right, rgb(194, 255, 182), rgb(255, 163, 182), rgb(221, 169, 255), rgb(162, 209, 255); box-shadow: inset 0 0 20px #fff, inset 10px 0 30px #f0f, inset -10px 0 30px #0ff, inset 10px 0 100px #f0f, inset -10px 0 100px #0ff, 0 0 20px #fff, -10px 0 30px #f0f, 10px 0 30px #0ff;`;
