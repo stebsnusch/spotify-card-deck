@@ -198,11 +198,11 @@ export default {
   },
   created: async function () {},
   mounted: async function () {
+    this.browser = browser.detect().name !== 'safari';
     this.spotify = await apiInit();
     await this.makeRequests(this.spotify);
     this.isLoading = false;
     this.colors = new Colors(this.topTrack.album.images[0].url);
-    this.browser = browser.detect().name === 'safari';
   },
   methods: {
     async makeRequests(api) {
