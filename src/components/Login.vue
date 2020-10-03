@@ -10,7 +10,7 @@
 export default {
   data() {
     return {
-      authLink: "http://localhost:8888/login",
+      authLink: "https://spotify-card-deck-backend.herokuapp.com/login",
     };
   },
 };
